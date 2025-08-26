@@ -20,10 +20,19 @@
     --letter-spacing-wide: 0.15em;
     --letter-spacing-wider: 0.25em;
     --border-width: 1px;
+    --transition-fast: 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    --transition-smooth: 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    --transition-slow: 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Smooth scrolling */
+html {
+    scroll-behavior: smooth;
 }
 
 html, body {
     height: 100%;
+    overflow-x: hidden;
 }
 
 body {
@@ -32,10 +41,120 @@ body {
     line-height: 1.2;
     color: var(--color-black);
     background: var(--color-white);
-    overflow-x: hidden;
+    cursor: none;
 }
 
-/* Typography - Heliot Emil Style */
+/* Custom Cursor */
+.cursor {
+    position: fixed;
+    width: 20px;
+    height: 20px;
+    background: var(--color-black);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform var(--transition-fast), opacity var(--transition-fast);
+    mix-blend-mode: difference;
+}
+
+.cursor-hover {
+    transform: scale(3);
+    opacity: 0.8;
+}
+
+.cursor-text {
+    transform: scale(6);
+    opacity: 0.1;
+}
+
+/* Loading Animation */
+.loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--color-white);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity var(--transition-slow), visibility var(--transition-slow);
+}
+
+.loader.hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.loader-text {
+    font-size: 1rem;
+    font-weight: 300;
+    letter-spacing: var(--letter-spacing-wider);
+    text-transform: uppercase;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+}
+
+/* Animated Background Elements */
+.bg-elements {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+    overflow: hidden;
+}
+
+.bg-line {
+    position: absolute;
+    background: var(--color-gray-medium);
+    opacity: 0.1;
+    animation: float 20s ease-in-out infinite;
+}
+
+.bg-line-1 {
+    width: 1px;
+    height: 200vh;
+    left: 20%;
+    animation-delay: 0s;
+}
+
+.bg-line-2 {
+    width: 1px;
+    height: 150vh;
+    right: 30%;
+    animation-delay: -5s;
+}
+
+.bg-line-3 {
+    height: 1px;
+    width: 100vh;
+    top: 30%;
+    left: -20%;
+    animation-delay: -10s;
+    transform-origin: left center;
+    transform: rotate(45deg);
+}
+
+@keyframes float {
+    0%, 100% { 
+        transform: translateY(0) rotate(45deg);
+        opacity: 0.1;
+    }
+    50% { 
+        transform: translateY(-50px) rotate(45deg);
+        opacity: 0.3;
+    }
+}
+
+/* Typography - Enhanced Heliot Emil Style */
 h1, h2, h3 {
     font-weight: 300;
     letter-spacing: var(--letter-spacing-wider);
@@ -46,6 +165,11 @@ h1, h2, h3 {
 h1 {
     font-size: 0.9rem;
     font-weight: 500;
+    transition: letter-spacing var(--transition-fast);
+}
+
+h1:hover {
+    letter-spacing: 0.5em;
 }
 
 h2 {
@@ -57,6 +181,7 @@ h3 {
     font-size: 0.8rem;
     font-weight: 400;
     margin-bottom: var(--spacing-xs);
+    transition: all var(--transition-fast);
 }
 
 p {
@@ -66,16 +191,25 @@ p {
     letter-spacing: 0.02em;
 }
 
-/* Header - Minimal Navigation */
+/* Header - Enhanced Animation */
 .header {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
-    background: var(--color-white);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     z-index: 1000;
     padding: var(--spacing-sm) 0;
-    border-bottom: var(--border-width) solid var(--color-black);
+    border-bottom: var(--border-width) solid transparent;
+    transition: all var(--transition-fast);
+}
+
+.header.scrolled {
+    background: rgba(255, 255, 255, 0.98);
+    border-bottom-color: var(--color-black);
+    transform: translateY(0);
 }
 
 .header-content {
@@ -90,6 +224,23 @@ p {
     font-size: 0.9rem;
     font-weight: 500;
     letter-spacing: var(--letter-spacing-wider);
+    transition: all var(--transition-fast);
+    position: relative;
+}
+
+.site-title::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: var(--color-black);
+    transition: width var(--transition-fast);
+}
+
+.site-title:hover::after {
+    width: 100%;
 }
 
 .nav {
@@ -104,12 +255,29 @@ p {
     font-weight: 300;
     letter-spacing: var(--letter-spacing-wider);
     text-transform: uppercase;
-    transition: opacity 0.3s ease;
+    transition: all var(--transition-fast);
     position: relative;
+    overflow: hidden;
+}
+
+.nav-link::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: var(--color-black);
+    transition: left var(--transition-fast);
+    z-index: -1;
+}
+
+.nav-link:hover::before {
+    left: 0;
 }
 
 .nav-link:hover {
-    opacity: 0.5;
+    color: var(--color-white);
 }
 
 /* Main Content */
@@ -117,7 +285,7 @@ p {
     margin-top: 60px;
 }
 
-/* Hero Section - Large Image Display */
+/* Hero Section - Advanced Interactions */
 .hero {
     height: 100vh;
     width: 100%;
@@ -125,6 +293,7 @@ p {
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
 }
 
 .hero-image {
@@ -135,20 +304,73 @@ p {
     align-items: center;
     justify-content: center;
     position: relative;
+    overflow: hidden;
 }
 
-.hero-placeholder {
-    font-size: 8rem;
-    font-weight: 100;
-    color: var(--color-gray-medium);
-    letter-spacing: var(--letter-spacing-wider);
+.hero-image::before {
+    content: '';
     position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, transparent 0%, rgba(0,0,0,0.1) 50%, transparent 100%);
+    transform: translateX(-100%);
+    transition: transform 1s ease;
+    z-index: 2;
 }
 
-/* Collections Grid - Heliot Emil Layout */
+.hero-image:hover::before {
+    transform: translateX(100%);
+}
+
+.hero-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    transition: transform var(--transition-slow);
+    filter: grayscale(0.2) contrast(1.1);
+}
+
+.hero-image:hover .hero-img {
+    transform: scale(1.05);
+    filter: grayscale(0) contrast(1.2);
+}
+
+.hero-overlay {
+    position: absolute;
+    bottom: var(--spacing-lg);
+    left: var(--spacing-lg);
+    color: var(--color-white);
+    z-index: 10;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all var(--transition-smooth);
+    mix-blend-mode: difference;
+}
+
+.hero-image:hover .hero-overlay {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.hero-overlay h2 {
+    font-size: 2rem;
+    font-weight: 100;
+    margin-bottom: var(--spacing-xs);
+}
+
+.hero-overlay p {
+    font-size: 0.9rem;
+    max-width: 300px;
+}
+
+/* Collections Grid - Enhanced Interactions */
 .collections {
     padding: 0;
     margin: 0;
+    position: relative;
 }
 
 .collections-grid {
@@ -167,10 +389,29 @@ p {
     overflow: hidden;
     cursor: pointer;
     border-bottom: var(--border-width) solid var(--color-black);
+    transition: all var(--transition-smooth);
 }
 
-.post-item:hover .post-image {
-    transform: scale(1.01);
+.post-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%);
+    transition: left var(--transition-smooth);
+    z-index: 5;
+    pointer-events: none;
+}
+
+.post-item:hover::before {
+    left: 100%;
+}
+
+.post-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
 }
 
 .post-image {
@@ -180,8 +421,13 @@ p {
     align-items: center;
     justify-content: center;
     position: relative;
-    transition: transform 0.6s ease;
+    transition: all var(--transition-smooth);
     width: 100%;
+    overflow: hidden;
+}
+
+.post-item:hover .post-image {
+    transform: scale(1.02);
 }
 
 .placeholder-image {
@@ -190,6 +436,18 @@ p {
     color: var(--color-gray-medium);
     letter-spacing: var(--letter-spacing-wider);
     position: absolute;
+    transition: all var(--transition-smooth);
+    animation: breathe 4s ease-in-out infinite;
+}
+
+@keyframes breathe {
+    0%, 100% { transform: scale(1); opacity: 0.7; }
+    50% { transform: scale(1.05); opacity: 1; }
+}
+
+.post-item:hover .placeholder-image {
+    transform: scale(1.2) rotate(5deg);
+    opacity: 0.3;
 }
 
 .post-content {
@@ -197,11 +455,23 @@ p {
     background: var(--color-white);
     position: relative;
     z-index: 10;
+    transition: all var(--transition-fast);
+    transform: translateY(0);
+}
+
+.post-item:hover .post-content {
+    transform: translateY(-5px);
 }
 
 .post-title {
     margin-bottom: var(--spacing-sm);
     font-size: 0.9rem;
+    transition: all var(--transition-fast);
+}
+
+.post-item:hover .post-title {
+    letter-spacing: 0.1em;
+    transform: translateX(5px);
 }
 
 .post-excerpt {
@@ -210,6 +480,13 @@ p {
     font-size: 0.7rem;
     line-height: 1.5;
     max-width: 400px;
+    transition: all var(--transition-fast);
+    opacity: 0.8;
+}
+
+.post-item:hover .post-excerpt {
+    opacity: 1;
+    transform: translateX(5px);
 }
 
 .post-meta {
@@ -219,10 +496,31 @@ p {
     font-size: 0.6rem;
     text-transform: uppercase;
     letter-spacing: var(--letter-spacing-wide);
+    transition: all var(--transition-fast);
+}
+
+.post-item:hover .post-meta {
+    transform: translateX(5px);
 }
 
 .post-category {
     font-weight: 400;
+    position: relative;
+}
+
+.post-category::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: var(--color-black);
+    transition: width var(--transition-fast);
+}
+
+.post-item:hover .post-category::after {
+    width: 100%;
 }
 
 .post-date {
@@ -230,7 +528,7 @@ p {
     font-weight: 300;
 }
 
-/* Concept Section */
+/* Concept Section - Enhanced */
 .concept {
     height: 50vh;
     display: flex;
@@ -239,12 +537,36 @@ p {
     background: var(--color-white);
     border-top: var(--border-width) solid var(--color-black);
     border-bottom: var(--border-width) solid var(--color-black);
+    position: relative;
+    overflow: hidden;
+}
+
+.concept::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 200px;
+    height: 200px;
+    border: 1px solid var(--color-gray-medium);
+    border-radius: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    animation: pulse-ring 6s ease-in-out infinite;
+    opacity: 0.3;
+}
+
+@keyframes pulse-ring {
+    0% { transform: translate(-50%, -50%) scale(0); opacity: 0.3; }
+    50% { transform: translate(-50%, -50%) scale(1); opacity: 0.1; }
+    100% { transform: translate(-50%, -50%) scale(2); opacity: 0; }
 }
 
 .concept-content {
     text-align: center;
     max-width: 600px;
     padding: 0 var(--spacing-md);
+    z-index: 10;
+    position: relative;
 }
 
 .concept-title {
@@ -252,6 +574,12 @@ p {
     font-weight: 300;
     margin-bottom: var(--spacing-md);
     letter-spacing: var(--letter-spacing-wider);
+    animation: glow 3s ease-in-out infinite;
+}
+
+@keyframes glow {
+    0%, 100% { text-shadow: none; }
+    50% { text-shadow: 0 0 20px rgba(0,0,0,0.1); }
 }
 
 .concept-text {
@@ -259,13 +587,37 @@ p {
     font-weight: 300;
     letter-spacing: var(--letter-spacing-wide);
     color: var(--color-gray-dark);
+    animation: fadeInOut 4s ease-in-out infinite;
 }
 
-/* Footer */
+@keyframes fadeInOut {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 1; }
+}
+
+/* Footer - Enhanced */
 .footer {
     padding: var(--spacing-md) 0;
     text-align: center;
     background: var(--color-white);
+    position: relative;
+}
+
+.footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 100px;
+    height: 1px;
+    background: var(--color-gray-medium);
+    transform: translateX(-50%) scaleX(0);
+    animation: expandLine 3s ease-in-out infinite;
+}
+
+@keyframes expandLine {
+    0%, 100% { transform: translateX(-50%) scaleX(0); }
+    50% { transform: translateX(-50%) scaleX(1); }
 }
 
 .footer-content {
@@ -278,9 +630,32 @@ p {
     text-transform: uppercase;
     letter-spacing: var(--letter-spacing-wider);
     font-weight: 300;
+    transition: all var(--transition-fast);
 }
 
-/* Large Screen Adjustments */
+.footer-text:hover {
+    letter-spacing: 0.5em;
+}
+
+/* Scroll Progress Indicator */
+.scroll-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: transparent;
+    z-index: 1001;
+}
+
+.scroll-progress-bar {
+    height: 100%;
+    background: var(--color-black);
+    width: 0%;
+    transition: width 0.1s ease;
+}
+
+/* Responsive Enhancements */
 @media (min-width: 768px) {
     .collections-grid {
         grid-template-columns: repeat(2, 1fr);
@@ -293,15 +668,16 @@ p {
     .post-item:nth-child(even) {
         border-left: calc(var(--border-width) / 2) solid var(--color-black);
     }
+    
+    .hero-overlay {
+        bottom: var(--spacing-xl);
+        left: var(--spacing-xl);
+    }
 }
 
 @media (min-width: 1200px) {
     .post-image {
         aspect-ratio: 21/9;
-    }
-    
-    .hero-placeholder {
-        font-size: 12rem;
     }
     
     .placeholder-image {
@@ -315,16 +691,20 @@ p {
 
 /* Mobile Adjustments */
 @media (max-width: 767px) {
+    body {
+        cursor: default;
+    }
+    
+    .cursor {
+        display: none;
+    }
+    
     .header-content {
         padding: 0 var(--spacing-sm);
     }
     
     .nav {
         gap: var(--spacing-md);
-    }
-    
-    .hero-placeholder {
-        font-size: 4rem;
     }
     
     .placeholder-image {
@@ -346,9 +726,17 @@ p {
     .concept-text {
         font-size: 0.7rem;
     }
+    
+    .hero-overlay {
+        bottom: var(--spacing-md);
+        left: var(--spacing-sm);
+    }
+    
+    .hero-overlay h2 {
+        font-size: 1.5rem;
+    }
 }
 
-/* Very Small Screens */
 @media (max-width: 480px) {
     .header-content {
         flex-direction: row;
@@ -363,11 +751,11 @@ p {
         font-size: 0.7rem;
     }
     
-    .hero-placeholder {
-        font-size: 3rem;
-    }
-    
     .post-image {
         aspect-ratio: 4/3;
+    }
+    
+    .hero-overlay h2 {
+        font-size: 1.2rem;
     }
 }
